@@ -29,6 +29,7 @@ from database import (
     get_todays_articles,
     get_recent_articles,
     insert_articles_batch,
+    save_daily_brief,
 )
 from processing.cleaner import clean_title, clean_summary, is_junk_article, compute_weighted_score
 from processing.dedup import deduplicate_articles, merge_multi_source_signals
@@ -271,6 +272,38 @@ async def run_full_pipeline():
     filepath = save_report(report, date_str)
     print(f"完整报告: {filepath}")
 
+    # 保存 AI 分析到数据库 (UI 读取)
+    for domain, articles in articles_by_domain.items():
+        top_stories = []
+        for a in articles[:10]:
+            top_stories.append({
+                "title": a.get("title", ""),
+                "source": a.get("source", ""),
+                "url": a.get("url", ""),
+                "score": a.get("weighted_score", 0),
+            })
+        save_daily_brief({
+            "date": date_str,
+            "domain": domain,
+            "top_stories": top_stories,
+            "summary": "",
+            "market_impact": [],
+            "opportunities": [],
+            "raw_ai_response": "",
+        })
+
+    # 保存完整的 AI 分析结果
+    save_daily_brief({
+        "date": date_str,
+        "domain": "all",
+        "top_stories": [],
+        "summary": "",
+        "market_impact": [],
+        "opportunities": [],
+        "raw_ai_response": full_ai_response,
+    })
+    print("AI 分析已存入数据库")
+
     # ── 控制台摘要 ──
     print_console_summary(
         articles_by_domain=articles_by_domain,
@@ -347,6 +380,22 @@ def main():
         market_summary = generate_market_summary(market_data, economic_data)
         report = generate_markdown_report(full_response, articles_by_domain, market_summary)
         filepath = save_report(report)
+        date_str = datetime.now().strftime("%Y-%m-%d")
+
+        # 保存领域数据
+        for domain, articles in articles_by_domain.items():
+            save_daily_brief({
+                "date": date_str, "domain": domain,
+                "top_stories": [{"title": a.get("title",""), "source": a.get("source",""), "url": a.get("url",""), "score": a.get("weighted_score",0)} for a in articles[:10]],
+                "summary": "", "market_impact": [], "opportunities": [], "raw_ai_response": "",
+            })
+        # 保存完整 AI 分析
+        save_daily_brief({
+            "date": date_str, "domain": "all",
+            "top_stories": [], "summary": "", "market_impact": [], "opportunities": [],
+            "raw_ai_response": full_response,
+        })
+
         print(f"✅ 分析完成! 报告: {filepath}")
         print_console_summary(articles_by_domain, 0, sum(len(v) for v in articles_by_domain.values()), len(full_response))
         return
