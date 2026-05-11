@@ -16,7 +16,7 @@
 - **5 domains covered**: Tech, Crypto, Energy, Semiconductors, US Stocks
 - **Streamlit web dashboard** for browsing and analysis
 - **Scheduled automation** (daily 7:00 & 18:00 Beijing time)
-- **Cost-efficient**: ~$60-150/month total (all free API tiers + AI API)
+- **Cost-efficient**: All news APIs are free. Only cost is DeepSeek API calls. Using `deepseek-v4-pro`: $0.435/M input tokens, $0.87/M output tokens (discounted pricing). Estimated ~$0.01-0.02 per daily run.
 
 ### Architecture
 
@@ -119,7 +119,7 @@ newstracker/
 - **五大领域覆盖**：科技、加密、能源、半导体、美股
 - **Streamlit Web 仪表盘**，中文界面
 - **定时自动化**：每天北京时间 7:00 和 18:00 自动运行
-- **极低成本**：月运营成本约 $60-150（全部使用免费 API 额度）
+- **极低成本**：所有新闻 API 均为免费额度，唯一花费是 DeepSeek API 调用。`deepseek-v4-pro` 模型：输入 $0.435/百万 token，输出 $0.87/百万 token（折扣价），每次运行约 $0.01-0.02
 
 ### 系统架构
 

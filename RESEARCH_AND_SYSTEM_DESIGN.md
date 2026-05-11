@@ -967,14 +967,14 @@ async def extract_tldr_articles_combined():
 │                AI 分析层 (AI Analysis)                  │
 │                                                        │
 │  ┌─────────────────────────────────────┐             │
-│  │  每日摘要生成 (Claude API / GPT-4)    │             │
+│  │  每日摘要生成 (DeepSeek / Claude)     │             │
 │  │  - 五大领域 Top 10 新闻摘要          │             │
 │  │  - 跨领域关联分析                    │             │
 │  │  - 趋势识别和预测                    │             │
 │  └──────────────┬──────────────────────┘             │
 │                 │                                     │
 │  ┌──────────────▼──────────────────────┐             │
-│  │  投资影响分析 (Claude API / GPT-4)     │             │
+│  │  投资影响分析 (DeepSeek / Claude)     │             │
 │  │  - 新闻 → 相关股票映射               │             │
 │  │  - 利多/利空判断 + 置信度            │             │
 │  │  - 影响时间维度（短期/中期/长期）      │             │
@@ -982,7 +982,7 @@ async def extract_tldr_articles_combined():
 │  └──────────────┬──────────────────────┘             │
 │                 │                                     │
 │  ┌──────────────▼──────────────────────┐             │
-│  │  价值发现引擎 (Claude API / GPT-4)    │             │
+│  │  价值发现引擎 (DeepSeek / Claude)     │             │
 │  │  - 低估标的识别（P/E, P/B, PEG等）   │             │
 │  │  - 催化事件匹配（技术突破→受益股）    │             │
 │  │  - 赛道轮动分析                      │             │
@@ -990,7 +990,7 @@ async def extract_tldr_articles_combined():
 │  └──────────────┬──────────────────────┘             │
 │                 │                                     │
 │  ┌──────────────▼──────────────────────┐             │
-│  │  创业机会识别 (Claude API / GPT-4)    │             │
+│  │  创业机会识别 (DeepSeek / Claude)     │             │
 │  │  - 技术趋势 → 商业机会映射           │             │
 │  │  - 低资金门槛方向筛选                │             │
 │  │  - 竞争格局分析                      │             │
@@ -1018,12 +1018,12 @@ async def extract_tldr_articles_combined():
 | **数据采集** | Python + aiohttp + asyncio | 异步并发获取，效率高 |
 | **数据清洗** | Pandas + Pydantic | 数据转换和验证 |
 | **实体识别** | spaCy + 自定义规则 | 轻量 NER，提取公司名/股票代码 |
-| **情感分析** | Claude API / GPT-4 API | 比传统 NLP 库准确得多 |
-| **数据库** | PostgreSQL + pgvector | 结构化+向量搜索一体 |
-| **缓存** | Redis | API 缓存，减少重复请求 |
-| **AI 引擎** | Claude API (推荐 Opus 4.7) | 分析质量最高 |
+| **情感分析** | DeepSeek API | 比传统 NLP 库准确得多 |
+| **数据库** | SQLite (MVP) → PostgreSQL + pgvector | 结构化+向量搜索一体 |
+| **缓存** | Redis (可选) | API 缓存，减少重复请求 |
+| **AI 引擎** | DeepSeek v4-pro | 输入 $0.435/M token, 输出 $0.87/M token |
 | **仪表盘** | Streamlit | 最快搭建数据看板 |
-| **部署** | Docker + 任意 VPS ($20/月) | 轻量部署 |
+| **部署** | 本地运行 / Docker + VPS | 轻量部署 |
 
 ### 数据流设计
 
@@ -1148,13 +1148,11 @@ ai_insights (
 
 | 项目 | 月成本 | 说明 |
 |------|-------|------|
-| VPS (4GB RAM) | ~$20 | Hetzner/DigitalOcean |
-| PostgreSQL | $0 | 自托管在 VPS |
-| API 源 | $0 | 全部使用免费层 |
-| Claude API | ~$30-100 | 每日一次完整分析 (Opus), ~$1-3/天 |
-| OpenAI API (备用) | ~$10-30 | GPT-4o 做辅助分析 |
-| 域名 (可选) | ~$1 | 可选 |
-| **月度总计** | **~$60-150** | 极低成本运营 |
+| VPS (可选) | ~$20 | Hetzner/DigitalOcean，本地运行则为 $0 |
+| 新闻 API 源 | $0 | 全部使用免费额度 |
+| AI 分析 (DeepSeek v4-pro) | <$1 | 输入 $0.435/M token, 输出 $0.87/M token (折扣价)。每次运行约 $0.01-0.02，每日两次约 $0.02-0.04/天 |
+
+唯一实质花费是 DeepSeek API 调用，成本取决于每日运行次数和新闻量。
 
 ---
 
